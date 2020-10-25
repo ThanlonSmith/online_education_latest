@@ -1,0 +1,254 @@
+{% extends 'base.html' %}
+{% block title %}授课教师{% endblock %}
+{% block css %}
+    <style>
+        .num {
+            background: url(/static/media/org/medal.png) no-repeat center center;
+            width: 23px;
+            height: 29px;
+            color: #fffc00;
+            text-align: center;
+            margin-top: 8px;
+        }
+
+        .img-circle:hover {
+            background: #717171;
+        }
+
+        .img-circle:hover span {
+            color: white;
+        }
+    </style>
+{% endblock %}
+{% block content %}
+    <div class="row">
+        <div class="col-md-12" style="padding-left: 2px;padding-right: 2px">
+            <ol class="breadcrumb" style="margin:8px 0">
+                <li class="active">授课教师</li>
+                <li><a href="{% url 'index' %}"></a></li>
+            </ol>
+        </div>
+        <div class="col-md-9" style="padding:0 2px">
+            <div style="background-color: #f8f8f8;height: 50px;line-height: 50px;border: 1px solid #ddd;">
+                <ul style="padding-left: 0;">
+                    <li style="float: left;list-style-type: none;margin: 0 16px;">
+                        <a style="color: #333;text-decoration:none;height: 50px;" href="?sort=">全部</a>
+                    </li>
+                    <li style="float: left;list-style-type: none;margin: 0 16px;">
+                        <a style="color: #333;text-decoration: none;height: 50px;" href="?sort=click_num">人气<span
+                                class="glyphicon glyphicon-arrow-down" style="font-size: 12px"></span></a>
+                    </li>
+                    <li style="clear: both;list-style: none;"></li>
+                    <!--<div style="clear: both;"></div>-->
+                </ul>
+            </div>
+            <div class="panel panel-default" style="margin-bottom: 8px">
+                <div class="panel-body" style="padding-bottom: 0">
+                    {% for teacher in pages %}
+                        <div class="media">
+                            <div class="media-left">
+                                <img width="70" height="70" class="media-object img-circle" data-src=""
+                                     alt="64x64"
+                                     data-holder-rendered="true" src="/static{{ MEDIA_URL }}{{ teacher.image }}">
+                                <div id="collect_teacher_btn"
+                                     style="margin-top: 18px;line-height: 20px;background: #717171;color: #ffffff;cursor: pointer;font-size: 12px"
+                                     class="text-center">
+                                    <span class="glyphicon glyphicon-star"
+                                          style="margin-right: -2px !important;"></span>
+                                    <span id="collect_teacher_content" title="{{ teacher.id }}">
+                                        收藏
+{#                                        {% if teacher.id %}#}
+{#                                            取消收藏#}
+{#                                        {% else %}#}
+{#                                            收藏#}
+{#                                        {% endif %}#}
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="media-body">
+                                {#<a href="{% url 'orgs:org_home' teacher.id %}" style="text-decoration:none;color: #333333">#}
+                                <h4 class="media-heading">{{ teacher.name }}
+                                    <img width="23" height="29" src="/static/media/org/authentication.png"
+                                         data-src="holder.js/10x10">
+                                    <span style="color: #fb8341">金牌讲师</span>
+                                </h4>
+                                {#</a>#}
+                                <ul style="color: #848484;font-size: 12px;">
+                                    <li style="margin-top: 3px">
+                                        <span>工作年限：<span>{{ teacher.work_year }}</span>年</span>&nbsp;&nbsp;
+                                        <span>年龄：<span>{{ teacher.age }}</span>岁</span>
+                                    </li>
+                                    <li style="margin-top: 3px">
+                                        <span>工作职位：<span>{{ teacher.work_position }}</span></span>
+                                    </li>
+                                    <li style="margin-top: 3px">
+                                        <span>就职公司：<span>{{ teacher.work_company }}</span></span>
+                                    </li>
+                                    <li style="margin-top: 3px">
+                                        <span>教学特点：<span>{{ teacher.work_style }}</span></span>
+                                    </li>
+                                </ul>
+                            </div>
+                            <div class="media-right" style="padding-top: 8px">
+                                <a href="{% url 'orgs:teacher_detail' teacher.id %}" style="text-decoration: none;">
+                                    <div class="img-circle"
+                                         style="width: 80px;height: 80px;border: 1px solid #717171;color: #717171;">
+                                        <span style="position: relative;left: 25px;top: 19px;">查看<br>详情</span>
+                                    </div>
+                                </a>
+                            </div>
+                        </div>
+                        <hr>
+                    {% endfor %}
+                </div>
+                <nav aria-label="Page navigation" class="text-center" style="padding-bottom: 10px">
+                    <ul class="pagination">
+                        <li>
+                            <a href="?page_num=1"
+                               aria-label="Previous">
+                                <span aria-hidden="true">首页</span>
+                            </a>
+                        </li>
+                        {% if pages.has_previous %}
+                            <li>
+                                <a href="?page_num={{ pages.previous_page_number }}&sort={{ sort }}"
+                                   aria-label="Previous">
+                                    <span aria-hidden="true">上一页</span>
+                                </a>
+                            </li>
+                        {% else %}
+                            <li class="disabled">
+                                <a href="javascript:" aria-label="Previous">
+                                    <span aria-hidden="true">上一页</span>
+                                </a>
+                            </li>
+                        {% endif %}
+                        {% for num in pages.paginator.page_range %}
+                            {% if pages.number == num %}
+                                <li class="active"><a
+                                        href="?page_num={{ num }}&sort={{ sort }}">{{ num }}</a>
+                                </li>
+                            {% else %}
+                                <li>
+                                    <a href="?page_num={{ num }}&sort={{ sort }}">{{ num }}</a>
+                                </li>
+                            {% endif %}
+                        {% endfor %}
+                        {% if pages.has_next %}
+                            <li>
+                                <a href="?page_num={{ pages.next_page_number }}&sort={{ sort }}"
+                                   aria-label="Next">
+                                    <span aria-hidden="true">下一页</span>
+                                </a>
+                            </li>
+                        {% else %}
+                            <li class="disabled">
+                                <a href="javascript:" aria-label="Next">
+                                    <span aria-hidden="true">下一页</span>
+                                </a>
+                            </li>
+                        {% endif %}
+                        <li>
+                            <a href="?page_num={{ num_pages }}&sort={{ sort }}"
+                               aria-label="Previous">
+                                <span aria-hidden="true">尾页</span>
+                            </a>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+        <div class="col-md-3" style="padding:0 2px">
+            <div class="panel panel-default" style="margin-bottom: 8px">
+                <div class="panel-heading">
+                    <h3 class="panel-title">讲师排行榜</h3>
+                </div>
+                <div class="panel-body">
+                    {% for teacher in ranking_list %}
+                        <div class="media">
+                            <div class="media-left">
+                                <a href="{% url 'orgs:teacher_detail' teacher.id %}">
+                                    <div class="num">{{ forloop.counter }}</div>
+                                </a>
+                            </div>
+                            <div class="media-left">
+                                <a href="{% url 'orgs:teacher_detail' teacher.id %}">
+                                    <img width="50" height="50" src="/static{{ MEDIA_URL }}{{ teacher.image }}"
+                                         alt="讲师头像">
+                                </a>
+                            </div>
+                            <div class="media-body">
+                                <h5 class="media-heading">{{ teacher.name }}</h5>
+                                <span style="font-size: 12px;">
+                                    <span>工作年限：</span>
+                                    <span style="color:#848484;">{{ teacher.work_year }}年</span>
+                                </span>
+                            </div>
+                        </div>
+                        <hr style="margin-bottom: 0">
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+{% block footer %}
+    <!--版权-->
+    <!-- <div class="col-md-12  text-center wow animate__animated animate__backInDown animate__delay-2s"-->
+    <div class="col-md-12  text-center wow animate__animated animate__fadeIn"
+         style="padding: 25px 0 25px;background: brown;margin-top: 8px">
+        <p style="margin: 0">
+            <a href="" style="color:white;font-weight: bold">关于本站</a>&nbsp;&nbsp;
+            <a href="" style="color:white;font-weight: bold">免责申明</a>&nbsp;&nbsp;
+            <a href="" style="color:white;font-weight: bold">联系我们</a>&nbsp;&nbsp;
+            <a href="" style="color:white;font-weight: bold">本站蓝图</a>&nbsp;&nbsp;
+        </p>
+        <p style="margin: 0">
+            <span style="color: white;font-weight: bold">Copyright © 2020-2022&nbsp; edu.pythoneers.cn. All Rights Reserved.</span>
+        </p>
+        <p style="margin: 0">
+            <a target="_blank_" href="http://www.miit.gov.cn/"
+               style="color:white;font-weight: bold">豫ICP备19037971号</a>
+            <a target="_blank">
+                <img src="{% static "public/images/beian.png" %}" style="padding-bottom:6px">
+                <span style="color:white;font-weight: bold">豫公网安备 41152802000091号</span>
+            </a>
+            <!--<span>版本号:1.1.0.190402_alpha</span>-->
+            <span>
+             <script type="text/javascript">var cnzz_protocol = (("https:" == document.location.protocol) ? "https://" : "http://");
+             document.write(unescape("%3Cspan id='cnzz_stat_icon_1278138602'%3E%3C/span%3E%3Cscript src='" + cnzz_protocol + "s4.cnzz.com/z_stat.php%3Fid%3D1278138602%26show%3Dpic' type='text/javascript'%3E%3C/script%3E"));</script>
+            <span id="cnzz_stat_icon_1278138602"></span>
+            <script src="http://s4.cnzz.com/z_stat.php?id=1278138602&amp;show=pic" type="text/javascript"></script>
+            <script src="http://c.cnzz.com/core.php?web_id=1278138602&amp;show=pic&amp;t=z" charset="utf-8"
+                    type="text/javascript">
+            </script>
+    </span>
+        </p>
+    </div>
+    <!--/版权-->
+{% endblock %}
+{% block js %}
+    <script>
+        $('#nav-teacher').css({'color': '#a52a2a'})
+        //收藏教师
+        $('#collect_teacher_btn').click(function () {
+            let love_id = $('#collect_teacher_content').attr("title");
+            let love_type = 3;
+            $.ajax({
+                url: '{% url 'operations:user_love' %}',
+                type: 'get',
+                data: {
+                    'love_id': love_id,
+                    'love_type': love_type
+                },
+                success: function (callback) {
+                    if (callback.status === 'ok') {
+                        $('#collect_teacher_content').text(callback.msg)
+                    } else {
+                        alert(callback.msg)
+                    }
+                }
+            })
+        })
+    </script>
+{% endblock %}

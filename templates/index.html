@@ -1,0 +1,263 @@
+{% extends 'base.html' %}
+{% block title %}
+    D5在线教育网
+{% endblock %}
+{% block css %}
+    <style>
+        .thumbnail {
+            margin-bottom: 5px;
+        }
+    </style>
+{% endblock %}
+{% block content %}
+    <div class="row">
+        <section style="margin-top:5px">
+            <div id="carousel-example-generic" class="carousel slide" data-ride="carousel">
+                <!-- Indicators -->
+                <ol class="carousel-indicators">
+                    {% for banner_info in all_banner %}
+                        {% if banner_info.id == first_banner.id %}
+                            <li data-target="#carousel-example-generic" data-slide-to="0" class="active"></li>
+                        {% else %}
+                            <li data-target="#carousel-example-generic" data-slide-to="0"></li>
+                        {% endif %}
+                    {% endfor %}
+                </ol>
+                <!-- Wrapper for slides -->
+                <div class="carousel-inner" role="listbox">
+                    {% for banner_info in  all_banner %}
+                        {% if banner_info.id == first_banner.id %}
+                            <div class="item active">
+                                <img class="img-responsive center-block"
+                                     src="static{{ MEDIA_URL }}{{ banner_info.image }}" alt="...">
+                                <div class="carousel-caption"></div>
+                            </div>
+                        {% else %}
+                            <div class="item">
+                                <img class="img-responsive center-block"
+                                     src="static{{ MEDIA_URL }}{{ banner_info.image }}" alt="...">
+                                <div class="carousel-caption">...</div>
+                            </div>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+                <!-- Controls -->
+                <a class="left carousel-control" href="#carousel-example-generic" role="button"
+                   data-slide="prev">
+                    <span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span>
+                    <span class="sr-only">Previous</span>
+                </a>
+                <a class="right carousel-control" href="#carousel-example-generic" role="button"
+                   data-slide="next">
+                    <span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span>
+                    <span class="sr-only">Next</span>
+                </a>
+            </div>
+        </section>
+        <section style="margin-top: 5px;">
+            <ul class="col-md-12"
+                style="padding-left: 0;margin:0;border:1px solid #ccc;list-style: none;height: 90px">
+                <li class="pull-left text-center" style="width: 25%;margin-top: 10px">
+                    <img width="34" height="39" src="/static/image/feature.png" alt="">
+                    <p style="color: #464646;font-size: 12px;margin-bottom:0;height: 30px;line-height: 30px">专业权威</p>
+                </li>
+                <li class="pull-left text-center" style="width: 25%;margin-top: 10px;border-left: 1px dashed #ccc">
+                    <img width="34" height="39" src="/static/image/feature.png" alt="">
+                    <p style="color: #464646;font-size: 12px;margin-bottom:0;height: 30px;line-height: 30px">课程最新</p>
+                </li>
+                <li class="pull-left text-center" style="width: 25%;margin-top: 10px;border-left: 1px dashed #ccc">
+                    <img width="34" height="39" src="/static/image/feature.png" alt="">
+                    <p style="color: #464646;font-size: 12px;margin-bottom:0;height: 30px;line-height: 30px">名师授课</p>
+                </li>
+                <li class="pull-left text-center" style="width: 25%;margin-top: 10px;border-left: 1px dashed #ccc">
+                    <img width="34" height="39" src="/static/image/feature.png" alt="">
+                    <p style="color: #464646;font-size: 12px;margin-bottom:0;height: 30px;line-height: 30px">数据真实</p>
+                </li>
+            </ul>
+            <div style="clear:both;"></div>
+        </section>
+        <section style="margin: 30px auto;">
+            <h3 style="padding-left: 8px;margin-bottom: 30px">
+                公开课程
+                <span class="pull-right"><a href="{% url 'courses:course_list' %}"
+                                            style="font-size: 14px;color: #666666;padding-right: 8px;">查看更多>></a></span>
+            </h3>
+            <div class="col-md-3" style="padding:0 2px;">
+                <div style='background:url("/static/image/public_course.jpg");height: 557px;padding-top: 70px'>
+                    <h3 style="color: #ffffff;line-height: 1.5" class="text-center">
+                        名师授课<br>
+                        专业权威
+                    </h3>
+                    <p class="text-center" style="color: #ffffff;margin-top: 30px">
+                        <a href="{% url 'courses:course_list' %}" class="btn btn-danger">查看更多课程></a>
+                    </p>
+                </div>
+            </div>
+            <div class="col-md-9" style="padding: 2px">
+                <!--
+                    <div style="padding-left:2px;padding-right:2px" class="col-md-8">
+                        轮播图
+                    </div>
+                -->
+{#                {% for course in all_course %}#}
+{#                    <div style="padding-left:2px;padding-right:2px" class="col-md-4">#}
+{#                        <div class="thumbnail">#}
+{#                            <a href="{% url 'courses:course_detail' course.id %}">#}
+{#                                <img class="img-responsive" data-src="holder.js/100%x150" alt="100%x150"#}
+{#                                     src="/static{{ MEDIA_URL }}{{ course.image }}" width="100%">#}
+{#                            </a>#}
+{#                            <div class="caption" style="padding-bottom: 0">#}
+{#                                <h5 style="font-weight: bold">{{ course.name }}</h5>#}
+{#                                <p style="font-size: 12px;color: #9f9f9f">#}
+{#                                    <span style="float: left">难度：#}
+{#                                        <span style="color: #fb8341">#}
+{#                                        {% if course.level == 'cj' %}#}
+{#                                            初级#}
+{#                                        {% elif course.level == 'zj' %}#}
+{#                                            中级#}
+{#                                        {% else %}#}
+{#                                            高级#}
+{#                                        {% endif %}#}
+{#                                        </span>#}
+{#                                    </span>#}
+{#                                    <span style="float: right">学习人数：#}
+{#                                        <span style="color: #fb8341">{{ course.study_num }}</span>#}
+{#                                    </span>#}
+{#                                <div style="clear: both"></div>#}
+{#                                </p>#}
+{#                                <p style="font-size: 12px;color: #9f9f9f;">#}
+{#                                    <span class="pull-left text-center"#}
+{#                                          style="background-color: #f0f0f0;line-height: 30px;width: 70%;">#}
+{#                                        {{ course.org_info }}#}
+{#                                    </span>#}
+{#                                    <span class="pull-right text-center"#}
+{#                                          style="background-color: #f0f0f0;line-height: 30px;width: 29%">#}
+{#                                        <span class="glyphicon glyphicon-star"></span>#}
+{#                                        {{ course.love_num }}#}
+{#                                    </span>#}
+{#                                <div style="clear:both;"></div>#}
+{#                                </p>#}
+{#                            </div>#}
+{#                        </div>#}
+{#                    </div>#}
+{#                {% endfor %}#}
+                {% for course in all_course %}
+                    <div style="padding-left:2px;padding-right:2px" class="col-md-4">
+                        <div class="thumbnail">
+                            <a href="{% url 'courses:course_detail' course.id %}">
+                                <img class="img-responsive" data-src="holder.js/100%x150" alt="100%x150"
+                                     src="/static{{ MEDIA_URL }}{{ course.image }}" width="100%">
+                            </a>
+                            <div class="caption" style="padding-bottom: 0">
+                                <h5 style="font-weight: bold">{{ course.name }}</h5>
+                                <p style="font-size: 12px;color: #9f9f9f">
+                                    <span style="float: left">难度：
+                                        <span style="color: #fb8341">
+                                        {% if course.level == 'cj' %}
+                                            初级
+                                        {% elif course.level == 'zj' %}
+                                            中级
+                                        {% else %}
+                                            高级
+                                        {% endif %}
+                                        </span>
+                                    </span>
+                                    <span style="float: right">学习人数：
+                                        <span style="color: #fb8341">{{ course.study_num }}</span>
+                                    </span>
+                                <div style="clear: both"></div>
+                                </p>
+                                <p style="font-size: 12px;color: #9f9f9f;">
+                                    <span class="pull-left text-center"
+                                          style="background-color: #f0f0f0;line-height: 30px;width: 70%;">
+                                        {{ course.org_info }}
+                                    </span>
+                                    <span class="pull-right text-center"
+                                          style="background-color: #f0f0f0;line-height: 30px;width: 29%">
+                                        <span class="glyphicon glyphicon-star"></span>
+                                        {{ course.love_num }}
+                                    </span>
+                                <div style="clear:both;"></div>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+            <div style="clear:both;"></div>
+        </section>
+        <section style="margin: 30px auto">
+            <h3 style="padding-left: 8px;margin-bottom: 30px">
+                课程机构
+                <span class="pull-right"><a href="{% url 'orgs:org_list' %}" style="font-size: 14px;color: #666666;">查看更多>></a></span>
+            </h3>
+            <div class="col-md-3" style="padding:0 2px;position: relative">
+                <div class="col-md-12"
+                     style='background:url("/static/image/public_org.jpg");height: 553px;padding-top: 70px'>
+                    <h3 style="color: #ffffff;line-height: 1.5" class="text-center">
+                        名校来袭<br>
+                        权威认证
+                    </h3>
+                    <p class="text-center" style="color: #ffffff;margin-top: 30px;">
+                        <a href="{% url 'courses:course_list' %}" class="btn btn-danger">查看更多机构></a>
+                    </p>
+                </div>
+            </div>
+            <div class="col-md-9" style="padding: 2px">
+                {% for org_info in all_org %}
+                    <div style="padding-left:2px;padding-right:2px" class="col-md-3">
+                        <div class="thumbnail">
+                            <a href="{% url 'orgs:org_home' org_info.id %}">
+                                <img width="261px" class="media-object" data-src="" alt=""
+                                     data-holder-rendered="true" src="/static{{ MEDIA_URL }}{{ org_info.image }}">
+                            </a>
+                            <div class="caption" style="padding-bottom: 0">
+                                <h5 style="font-weight: bold" class="text-center">{{ org_info.name }}</h5>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        </section>
+    </div>
+{% endblock %}
+{% block footer %}
+    <!--版权-->
+    <!-- <div class="col-md-12  text-center wow animate__animated animate__backInDown animate__delay-2s"-->
+    <div class="col-md-12  text-center wow animate__animated animate__fadeIn"
+         style="padding: 25px 0 25px;background: brown;margin-top: 8px">
+        <p style="margin: 0">
+            <a href="" style="color:white;font-weight: bold">关于本站</a>&nbsp;&nbsp;
+            <a href="" style="color:white;font-weight: bold">免责申明</a>&nbsp;&nbsp;
+            <a href="" style="color:white;font-weight: bold">联系我们</a>&nbsp;&nbsp;
+            <a href="" style="color:white;font-weight: bold">本站蓝图</a>&nbsp;&nbsp;
+        </p>
+        <p style="margin: 0">
+            <span style="color: white;font-weight: bold">Copyright © 2020-2022&nbsp; edu.pythoneers.cn. All Rights Reserved.</span>
+        </p>
+        <p style="margin: 0">
+            <a target="_blank_" href="http://www.miit.gov.cn/"
+               style="color:white;font-weight: bold">豫ICP备19037971号</a>
+            <a target="_blank">
+                <img src="{% static "public/images/beian.png" %}" style="padding-bottom:6px">
+                <span style="color:white;font-weight: bold">豫公网安备 41152802000091号</span>
+            </a>
+            <!--<span>版本号:1.1.0.190402_alpha</span>-->
+            <span>
+             <script type="text/javascript">var cnzz_protocol = (("https:" == document.location.protocol) ? "https://" : "http://");
+             document.write(unescape("%3Cspan id='cnzz_stat_icon_1278138602'%3E%3C/span%3E%3Cscript src='" + cnzz_protocol + "s4.cnzz.com/z_stat.php%3Fid%3D1278138602%26show%3Dpic' type='text/javascript'%3E%3C/script%3E"));</script>
+            <span id="cnzz_stat_icon_1278138602"></span>
+            <script src="http://s4.cnzz.com/z_stat.php?id=1278138602&amp;show=pic" type="text/javascript"></script>
+            <script src="http://c.cnzz.com/core.php?web_id=1278138602&amp;show=pic&amp;t=z" charset="utf-8"
+                    type="text/javascript">
+            </script>
+    </span>
+        </p>
+    </div>
+    <!--/版权-->
+{% endblock %}
+{% block js %}
+    <script>
+        $('#nav-index').css({'color': '#a52a2a'})
+    </script>
+{% endblock %}

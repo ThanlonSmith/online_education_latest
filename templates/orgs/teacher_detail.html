@@ -1,0 +1,218 @@
+{% extends 'base.html' %}
+{% block title %}授课教师详情{% endblock %}
+{% block css %}
+    <style>
+        #collect_org_btn {
+            width: 100px;
+            height: 30px;
+            line-height: 30px;
+            border: 1px solid #ff7800;
+            border-radius: 2px;
+            color: #ff7800;
+            margin: 30px auto;
+            text-align: center;
+            cursor: pointer;
+            display: block;
+            text-decoration: none;
+        }
+
+        .num {
+            background: url(/static/media/org/medal.png) no-repeat center center;
+            width: 23px;
+            height: 29px;
+            color: #fffc00;
+            text-align: center;
+            margin-top: 8px;
+        }
+    </style>
+{% endblock %}
+{% block content %}
+    <div class="row">
+    <div class="col-md-12" style="padding-left: 2px;padding-right: 2px">
+        <ol class="breadcrumb" style="margin:8px 0">
+            <li><a href="{% url 'orgs:teacher_list' %}">授课教师</a></li>
+            <li class="active">教师详情</li>
+        </ol>
+    </div>
+    <div class="col-md-9" style="padding:0 2px">
+        <div class="panel panel-default" style="margin-bottom: 8px">
+            <div class="panel-body">
+                <div class="media">
+                    <div class="media-left" style="padding: 10px">
+                        <img width="70" height="70" class="media-object img-circle" data-src="" alt="64x64"
+                             data-holder-rendered="true" src="/static{{ MEDIA_URL }}{{ current_teacher.image }}"
+                             style="margin: 0 auto;">
+                        <div>
+                            <a id="collect_teacher_btn" style="margin-top: 5px;line-height: 20px;background: #717171;color: #ffffff;cursor: pointer;font-size: 12px;display: block;text-decoration: none"
+                               class="text-center">
+                                <span class="glyphicon glyphicon-star"></span>
+                                <span id="collect_teacher_content">
+                                 {% if teacher_love %}
+                                     取消收藏
+                                 {% else %}
+                                     收藏
+                                 {% endif %}
+                                </span>
+                            </a>
+                        </div>
+                    </div>
+                    <div class="media-body">
+                        <h4 class="media-heading">{{ current_teacher.name }}
+                            <img width="23" height="29" src="/static/media/org/authentication.png"
+                                 data-src="holder.js/10x10">
+                            <span style="color: #fb8341">金牌讲师</span>
+                        </h4>
+                        <ul style="color: #848484;font-size: 12px;">
+                            <li style="margin-top: 3px">
+                                <span>工作年限：<span>{{ current_teacher.work_year }}</span>年</span>&nbsp;&nbsp;
+                                <span>年龄：<span>{{ current_teacher.age }}</span>岁</span>
+                            </li>
+                            <li style="margin-top: 3px">
+                                <span>工作职位：<span>{{ current_teacher.work_position }}</span></span>
+                            </li>
+                            <li style="margin-top: 3px">
+                                <span>就职公司：<span>{{ current_teacher.work_company }}</span></span>
+                            </li>
+                            <li style="margin-top: 3px">
+                                <span>教学特点：<span>{{ current_teacher.work_style }}</span></span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="panel panel-default">
+            <div class="panel-heading">全部课程</div>
+            <div class="panel-body">
+                {% for course in current_teacher.courseinfo_set.all %}
+                    <div style="padding-left:2px;padding-right:2px" class="col-sm-6 col-md-3">
+                        <div class="thumbnail">
+                            <a href="{% url 'courses:course_detail' course.id %}">
+                                <img data-src="holder.js/100%x150" alt="100%x150"
+                                     src="/static{{ MEDIA_URL }}{{ course.image }}">
+                            </a>
+                            <div class="caption" style="padding-bottom: 0">
+                                <h5 style="font-weight: bold">{{ course.name }}</h5>
+                                <p style="font-size: 12px;color: #9f9f9f">
+                                    <span style="float: left">课时：<span style="color: #fb8341">{{ course.study_time }} min</span></span>
+                                    <span style="float: right">参加人数：<span
+                                            style="color: #fb8341">{{ course.study_num }}</span></span>
+                                </p>
+                                <div style="clear: both"></div>
+                                <p></p>
+                                <p style="font-size: 12px;color: #9f9f9f;">
+                                <span class="pull-left text-center"
+                                      style="background-color: #f0f0f0;line-height: 30px;width: 70%;">
+                                    {{ course.org_info }}
+                                </span>
+                                    <span class="pull-right text-center"
+                                          style="background-color: #f0f0f0;line-height: 30px;width: 29%"><span
+                                            class="glyphicon glyphicon-star"></span>{{ course.love_num }}</span>
+                                </p>
+                                <div style="clear:both;"></div>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3" style="padding:0 2px">
+        <div class="panel panel-default" style="margin-bottom: 8px">
+            <div class="panel-heading">
+                <h3 class="panel-title">所属机构</h3>
+            </div>
+            <div class="panel-body" style="padding: 8px">
+                <div class="thumbnail" style="margin-bottom: 0">
+                    <a href="/orgs/home/1/">
+                        <img class="img-responsive" data-src="holder.js/100%x150" src="/static/media/org/beijing.jpg"
+                             alt="课程所属机构图片">
+                    </a>
+                    <div class="caption" style="padding-bottom: 0">
+                        <h5 style="font-weight: bold" class="text-center">北京大学</h5>
+                        <h5 style="font-weight: bold" class="text-center">所在地区：北京</h5>
+                        <a id="collect_org_btn">
+                            {% if org_love %}
+                                取消收藏
+                            {% else %}
+                                收藏
+                            {% endif %}
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="panel panel-default" style="margin-bottom: 8px">
+            <div class="panel-heading">
+                <h3 class="panel-title">讲师排行榜</h3>
+            </div>
+            <div class="panel-body">
+                {% for teacher in ranking_list %}
+                    <div class="media">
+                        <div class="media-left">
+                            <a href="">
+                                <div class="num">{{ forloop.counter }}</div>
+                            </a>
+                        </div>
+                        <div class="media-left">
+                            <img width="50" height="50" src="/static{{ MEDIA_URL }}{{ teacher.image }}" alt="讲师头像">
+                        </div>
+                        <div class="media-body">
+                            <h5 class="media-heading">{{ teacher.name }}</h5>
+                            <span style="font-size: 12px;">
+                                    <span>工作年限：</span>
+                                    <span style="color:#848484;">{{ teacher.work_year }}年</span>
+                                </span>
+                        </div>
+                    </div>
+                    <!--<hr>-->
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+{% endblock %}
+{% block js %}
+    <script>
+        $('#nav-teacher').css({'color': '#a52a2a'});
+        //收藏机构
+        $('#collect_org_btn').click(function () {
+            let love_id = {{ current_teacher.work_company.id }};
+            let love_type = 1;
+            $.ajax({
+                url: '{% url 'operations:user_love' %}',
+                type: 'get',
+                data: {
+                    'love_id': love_id,
+                    'love_type': love_type
+                },
+                success: function (callback) {
+                    if (callback.status === 'ok') {
+                        $('#collect_org_btn').text(callback.msg)
+                    } else {
+                        alert(callback.msg)
+                    }
+                }
+            })
+        })
+        //收藏教师
+        $('#collect_teacher_btn').click(function () {
+            let love_id = {{ current_teacher.id }};
+            let love_type = 3;
+            $.ajax({
+                url: '{% url 'operations:user_love' %}',
+                type: 'get',
+                data: {
+                    'love_id': love_id,
+                    'love_type': love_type
+                },
+                success: function (callback) {
+                    if (callback.status === 'ok') {
+                        $('#collect_teacher_content').text(callback.msg)
+                    } else {
+                        alert(callback.msg)
+                    }
+                }
+            })
+        })
+    </script>
+{% endblock %}
