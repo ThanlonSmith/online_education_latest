@@ -1,6 +1,6 @@
 from django import forms
 from captcha.fields import CaptchaField
-from .models import UserProfile
+from .models import UserProfile, EmailVerifyCode
 
 
 class UserRegisterForm(forms.Form):
@@ -61,3 +61,15 @@ class UpdateProfileForm(forms.ModelForm):
     class Meta:
         model = UserProfile
         fields = ['nick_name', 'birthday', 'gender', 'address', 'phone']
+
+
+class UserUpdateEmailForm(forms.ModelForm):
+    class Meta:
+        model = UserProfile
+        fields = ['email']
+
+
+class UserResetEmailForm(forms.ModelForm):
+    class Meta:
+        model = EmailVerifyCode
+        fields = ['email', 'code']

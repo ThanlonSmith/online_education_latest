@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect, reverse, HttpResponse
 from .forms import UserRegisterForm, UserLoginForm, UserForgetPwdForm, UserResetForm, UserChangeImageForm, \
-    UpdateProfileForm
+    UpdateProfileForm, UserUpdateEmailForm, UserResetEmailForm
 from .models import UserProfile, EmailVerifyCode, BannerInfo
 from ..orgs.models import OrgInfo
 from django.db.models import Q
@@ -10,6 +10,7 @@ from tools.send_email_tool import send_email_code
 from django.views import View
 from django.http import HttpResponse, JsonResponse
 from ..courses.models import CourseInfo
+import datetime
 
 
 def index(request):
@@ -107,7 +108,7 @@ def user_login(request):
 # 用户退出功能模块
 def user_logout(request):
     logout(request)
-    return redirect(reverse('index'))
+    return redirect(reverse('users:login'))
 
 
 # 用户激活(这里还遗留一个问题：如果产生的随机码有重复，一个验证码对不同的邮箱，可能会出问题)
@@ -214,6 +215,65 @@ class UserChangeImage(View):
             return JsonResponse({
                 'status': 'fail'
             })
+
+
+# 获取邮箱验证码
+class GetEmailCode(View):
+    '''
+    当用户修改邮箱，点击获取验证码的时候，会通过这个函数处理，发送邮箱验证码
+    :param request: http请求对象
+    :return: 返回json数据，在模板页面当中去处理
+    '''
+
+    def post(self, request):
+        user_update_email_form = UserUpdateEmailForm(request.POST)
+        if user_update_email_form.is_valid():
+            email = user_update_email_form.cleaned_data['email']
+            user_list = UserProfile.objects.filter(Q(email=email) | Q(username=email))
+            if user_list.exists():
+                return JsonResponse({'status': 'fail', 'msg': '邮箱已经被绑定'})
+            else:
+                # 我们在发送邮箱验证码之前，应该去邮箱验证码的表当中去查找，看之前有没有往当前这个邮箱发送过修改邮箱这个类型的验证码
+                email_ver_list = EmailVerifyCode.objects.filter(email=email, send_type=3)
+                # 如果发送过验证码，那么我们就拿到最近发送的这一个
+                if email_ver_list.exists():
+                    email_first = email_ver_list.order_by('-add_time')[0]
+                    # 判断当前时间和最近发送的验证码添加时间之差
+                    if (datetime.datetime.now() - email_first.add_time).seconds > 60:
+                        # 如果我们重新发送了新的验证码，那么以前最近发的就被清了
+                        send_email_code(email, 3)
+                        email_first.delete()
+                        return JsonResponse({'status': 'ok', 'msg': '请尽快去邮箱当中获取验证码！'})
+                    else:
+                        return JsonResponse({'status': 'fail', 'msg': '请不要重复发送验证码，1分钟后重试！'})
+                else:
+                    send_email_code(email, 3)
+                    return JsonResponse({'status': 'ok', 'msg': '请尽快去邮箱当中获取验证码'})
+        else:
+            return JsonResponse({'status': 'fail', 'msg': '您的邮箱有问题'})
+
+
+# 重置邮箱
+class ResetEmail(View):
+    def post(self, request):
+        user_reset_email_form = UserResetEmailForm(request.POST)
+        if user_reset_email_form.is_valid():
+            email = user_reset_email_form.cleaned_data['email']
+            code = user_reset_email_form.cleaned_data['code']
+            email_verify_code_list = EmailVerifyCode.objects.filter(email=email, code=code)
+            if email_verify_code_list.exists():
+                email_ver = email_verify_code_list[0]
+                if (datetime.datetime.now() - email_ver.add_time).seconds < 60:
+                    request.user.username = email
+                    request.user.email = email
+                    request.user.save()
+                    return JsonResponse({'status': 'ok', 'msg': '邮箱修改成功！'})
+                else:
+                    return JsonResponse({'status': 'fail', 'msg': '验证码失效，请重新发送验证码！'})
+            else:
+                return JsonResponse({'status': 'fail', 'msg': '邮箱或者验证码有误'})
+        else:
+            return JsonResponse({'status': 'fail', 'msg': '邮箱或者验证码不合法'})
 
 
 # 更新个人资料
