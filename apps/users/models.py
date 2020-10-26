@@ -8,7 +8,8 @@ from datetime import datetime
 class UserProfile(AbstractUser):
     image = models.ImageField(upload_to='user/', max_length=200, verbose_name='用户头像', null=True, blank=True)
     nick_name = models.CharField(max_length=20, verbose_name='用户昵称', null=True, blank=True)
-    birthday = models.DateTimeField(verbose_name='用户出生日期', null=True, blank=True)
+    # birthday = models.DateTimeField(verbose_name='用户出生日期', null=True, blank=True)
+    birthday = models.DateField(verbose_name='用户出生日期', null=True, blank=True)
     gender = models.CharField(choices=(('girl', '女'), ('boy', '男')), max_length=10, verbose_name='用户性别', default='girl')
     address = models.CharField(max_length=200, verbose_name='用户地址')
     phone = models.CharField(max_length=200, verbose_name='用户手机号')

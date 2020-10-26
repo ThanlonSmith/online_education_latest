@@ -1,13 +1,148 @@
-<!doctype html>
-<html lang="zh-CN">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport"
-          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>个人资料</title>
-</head>
-<body>
+{% extends 'users/user_base.html' %}
+{% block right %}
+    <div class="panel panel-default">
+        <div class="panel-heading">个人资料</div>
+        <div class="panel-body" style="padding: 0">
+            <div class="col-md-6" style="padding: 0">
+                <div style="height: 200px;border-bottom: 1px solid #dddddd;padding-top: 30px">
+                    <div class="text-center">
+                        {#                        <img class="img-circle" width="80" src="/static{{ MEDIA_URL }}{{ request.user.image }}" alt="">#}
+                        {#                        <br><br>#}
+                        {#                        <imput class="btn btn-danger">修改头像</imput>#}
+                        <iframe id='frameFile' name='frameFile' style='display: none;'></iframe>
+                        <form class="clearfix" id="jsAvatarForm" enctype="multipart/form-data" autocomplete="off"
+                              method="post" action="{% url 'users:update_image' %}" target='frameFile'>
+                            {% csrf_token %}
+                            <label class="changearea" for="avatarUp">
+                            <span id="avatardiv" class="pic">
+                                <img width="100" height="100" class="js-img-show" id="avatarShow"
+                                     src="/static{{ MEDIA_URL }}{{ request.user.image }}"/>
+                            </span>
+                                <span class="fl upload-inp-box" style="margin-left:70px;">
+                                <span class="button btn-green btn-w100" id="jsAvatarBtn">修改头像</span>
+                                <input type="file" name="image" id="avatarUp" class="js-img-up"/>
+                            </span>
+                            </label>
+                        </form>
+                    </div>
+                </div>
+                <!--绑定了submit只要修改了就提交-->
+                <div style="height: 200px;padding-top: 80px">
+                    <div class="text-center">
+                        <a class="btn btn-danger" href="">修改密码</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6" style="padding: 0;">
+                <div style="height: 400px;border-left: 1px solid #dddddd;padding-top: 20px">
+                    <form class="form-horizontal">
+                        <div class="form-group">
+                            <label for="" class="col-sm-2 control-label">昵称</label>
+                            <div class="col-sm-9">
+                                <input type="text" class="form-control" id="nick_name" placeholder="请输入昵称"
+                                       value="{{ request.user.nick_name|default_if_none:'' }}">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="" class="col-sm-2 control-label">生日</label>
+                            <div class="col-sm-9">
+                                <input type="text" id="birthday" class="form-control" placeholder="请输入生日"
+                                       value="{{ request.user.birthday|date:'Y-m-d'}}">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="" class="col-sm-2 control-label">性别</label>
+                            <div class="col-sm-9">
+                                <label class="radio-inline">
+                                    <input type="radio" {% if request.user.gender == 'boy' %}
+                                           checked="checked" {% endif %}  name="inlineRadioOptions" id="inlineRadio1"
+                                           value="boy"> 男
+                                </label>
+                                <label class="radio-inline">
+                                    <input type="radio" {% if request.user.gender == 'girl' %}
+                                           checked="checked" {% endif %} name="inlineRadioOptions" id="inlineRadio2"
+                                           value="girl"> 女
+                                </label>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="" class="col-sm-2 control-label">地址</label>
+                            <div class="col-sm-9">
+                                <input type="text" class="form-control" id="address" placeholder="请输入地址"
+                                       value="{{ request.user.address|default_if_none:'' }}">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="" class="col-sm-2 control-label">手机</label>
+                            <div class="col-sm-9">
+                                <input type="text" class="form-control" id="phone" placeholder="请输入手机号"
+                                       value="{{ request.user.phone|default_if_none:'' }}">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="" class="col-sm-2 control-label">邮箱</label>
+                            <div class="col-sm-9">
+                                <div class="input-group">
+                                    <input type="text" id="verify_code" name="verify_code" class="form-control"
+                                           placeholder="" maxlength="6" minlength="6" readonly
+                                           value="{{ request.user.email }}">
+                                    <span class="input-group-addon">
+                                        <button style="border:none;color: green;font-weight: bold;">修改邮箱</button>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="col-sm-offset-2 col-sm-10">
+                                <button id="edit_profile_btn" type="submit" class="btn btn-danger">修改</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+{% block right_js %}
+    <script src="/static/js/laydate.js"></script>
+    <script src="{% static 'js/jquery.upload.js' %}"></script>
+    <script>
+        $(function () {
+            $('#personal_profile').addClass('active')
+            //laydate需要用到的
+            laydate.render({
+                elem: '#birthday'
+                , format: 'yyyy-MM-dd'
+            });
+            $('#edit_profile_btn').click(function () {
+                let nick_name = $('#nick_name').val();
+                let birthday = $('#birthday').val();
+                let gender = $(':checked').val();
+                let address = $('#address').val();
+                let phone = $('#phone').val();
+                $.ajax({
+                    type: 'POST',
+                    url: '{% url 'users:update_profile' %}',
+                    data: {
+                        nick_name: nick_name,
+                        birthday: birthday,
+                        gender: gender,
+                        address: address,
+                        phone: phone,
+                        csrfmiddlewaretoken: '{{ csrf_token }}'
+                    },
+                    success: function (callback) {
+                        if (callback.status == 'ok') {
+                            alert(callback.msg);
+                            location.reload();
+                        } else {
+                            alert(callback.msg)
+                        }
+                    }
 
-</body>
-</html>
+                })
+                return false;
+            })
+        })
+    </script>
+{% endblock %}

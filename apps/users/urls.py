@@ -14,7 +14,8 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.urls import path, re_path
-from .views import user_register, user_login, user_logout, user_activate, user_forget_pwd, user_reset, PersonalProfile
+from .views import user_register, user_login, user_logout, user_activate, user_forget_pwd, user_reset, PersonalProfile, \
+    MyCourse, MyLoveOrg, MyLoveTeacher, MyLoveCourse, MyMessage, UserChangeImage,UpdateProfile
 
 urlpatterns = [
     path('register/', user_register, name='register'),
@@ -23,5 +24,12 @@ urlpatterns = [
     path('forgetpwd/', user_forget_pwd, name='forget_pwd'),
     re_path('activate/(\w+)', user_activate, name='activate'),
     re_path('reset/(\w+)', user_reset, name='reset'),
-    path('center/personal-profile', PersonalProfile.as_view(), name='personal_profile'),
+    path('personal-profile', PersonalProfile.as_view(), name='personal_profile'),
+    path('my-course', MyCourse.as_view(), name='my_course'),
+    path('my-love_org', MyLoveOrg.as_view(), name='my_love_org'),
+    path('my-love_teacher', MyLoveTeacher.as_view(), name='my_love_teacher'),
+    path('my-love_course', MyLoveCourse.as_view(), name='my_love_course'),
+    path('my-message', MyMessage.as_view(), name='my_message'),
+    path('update/image', UserChangeImage.as_view(), name='update_image'),
+    path('update/profile', UpdateProfile.as_view(), name='update_profile'),
 ]

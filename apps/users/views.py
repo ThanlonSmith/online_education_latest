@@ -1,5 +1,6 @@
 from django.shortcuts import render, redirect, reverse, HttpResponse
-from .forms import UserRegisterForm, UserLoginForm, UserForgetPwdForm, UserResetForm
+from .forms import UserRegisterForm, UserLoginForm, UserForgetPwdForm, UserResetForm, UserChangeImageForm, \
+    UpdateProfileForm
 from .models import UserProfile, EmailVerifyCode, BannerInfo
 from ..orgs.models import OrgInfo
 from django.db.models import Q
@@ -9,14 +10,6 @@ from tools.send_email_tool import send_email_code
 from django.views import View
 from django.http import HttpResponse, JsonResponse
 from ..courses.models import CourseInfo
-
-
-# 用户个人中心个人资料
-class PersonalProfile(View):
-    def get(self, request):
-        return render(request, 'users/personal_profile.html')
-
-    # Create your views here.
 
 
 def index(request):
@@ -157,6 +150,7 @@ def user_forget_pwd(request):
             })
 
 
+# 重置用户密码
 def user_reset(request, code):
     if code:
         if request.method == 'GET':
@@ -195,3 +189,91 @@ def user_reset(request, code):
                     'code': code
                 })
     pass
+
+
+# 个人资料
+class PersonalProfile(View):
+    def get(self, request):
+        return render(request, 'users/personal_profile.html', {
+            'item_name': '个人资料',
+        })
+
+
+# 用户头像的修改
+class UserChangeImage(View):
+    def post(self, request):
+        # instance：指名实例是什么？做修改的时候，我们需要知道是给哪个对象实例进行修改。如果不指名，就会被当做创建对象去执行
+        user_change_image_form = UserChangeImageForm(request.POST, request.FILES,
+                                                     instance=request.user)  # request.FILES：post以外的数据
+        if user_change_image_form.is_valid():
+            user_change_image_form.save(commit=True)  # 修改，如果加是不知道创建还是修改
+            return JsonResponse({
+                'status': 'ok'
+            })
+        else:
+            return JsonResponse({
+                'status': 'fail'
+            })
+
+
+# 更新个人资料
+class UpdateProfile(View):
+    def post(self, request):
+        # nick_name = request.POST.get('nick_name')
+        # birthday = request.POST.get('birthday')
+        # gender = request.POST.get('gender')
+        # address = request.POST.get('address')
+        # phone = request.POST.get('phone')
+        update_profile_form = UpdateProfileForm(request.POST, instance=request.user)
+        ret = {'status': None, 'msg': None}
+        if update_profile_form.is_valid():
+            update_profile_form.save(commit=True)
+            ret['status'] = 'ok'
+            ret['msg'] = '修改成功！'
+            return JsonResponse(ret)
+        else:
+            print(
+                update_profile_form.errors)  # <ul class="errorlist"><li>birthday<ul class="errorlist"><li>输入一个有效的日期。</li></ul></li></ul>
+            ret['status'] = 'fail'
+            ret['msg'] = '修改失败！'
+            return JsonResponse(ret)
+
+
+# 我的课程
+class MyCourse(View):
+    def get(self, request):
+        return render(request, 'users/my_course.html', {
+            'item_name': '我的课程'
+        })
+
+
+# 我的收藏-课程机构
+class MyLoveOrg(View):
+    def get(self, request):
+        return render(request, 'users/my_love_org.html', {
+            'item_name': '我的收藏'
+        })
+
+
+# 我的收藏-授课教师
+class MyLoveTeacher(View):
+    def get(self, request):
+        return render(request, 'users/my_love_teacher.html', {
+            'item_name': '我的收藏'
+        })
+
+
+# 我的收藏-公开课程
+class MyLoveCourse(View):
+    def get(self, request):
+        return render(request, 'users/my_love_course.html', {
+            'item_name': '我的收藏'
+        })
+
+
+# 我的消息
+class MyMessage(View):
+    def get(self, request):
+        return render(request, 'users/my_message.html', {
+            'item_name': '我的消息'
+        })
