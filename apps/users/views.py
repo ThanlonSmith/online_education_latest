@@ -1,3 +1,4 @@
+from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from django.shortcuts import render, redirect, reverse, HttpResponse
 from .forms import UserRegisterForm, UserLoginForm, UserForgetPwdForm, UserResetForm, UserChangeImageForm, \
     UpdateProfileForm, UserUpdateEmailForm, UserResetEmailForm
@@ -302,8 +303,25 @@ class UpdateProfile(View):
 # 我的课程
 class MyCourse(View):
     def get(self, request):
+        usercourse_list = request.user.usercourse_set.all()
+        course_list = [usercourse.study_course for usercourse in usercourse_list]
+        """
+        分页功能
+        """
+        page_num = request.GET.get('page_num', '')
+        per_page = 4
+        paginator = Paginator(course_list, per_page)
+        num_pages = paginator.num_pages
+        try:
+            pages = paginator.page(page_num)
+        except PageNotAnInteger:
+            pages = paginator.page(1)
+        except EmptyPage:
+            pages = paginator.page(1)
         return render(request, 'users/my_course.html', {
-            'item_name': '我的课程'
+            'item_name': '我的课程',
+            'pages': pages,
+            'num_pages': num_pages,
         })
 
 
