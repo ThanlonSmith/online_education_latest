@@ -1,22 +1,7 @@
-"""online_education URL Configuration
-
-The `urlpatterns` list routes URLs to views. For more information please see:
-    https://docs.djangoproject.com/en/3.1/topics/http/urls/
-Examples:
-Function views
-    1. Add an import:  from my_app import views
-    2. Add a URL to urlpatterns:  path('', views.home, name='home')
-Class-based views
-    1. Add an import:  from other_app.views import Home
-    2. Add a URL to urlpatterns:  path('', Home.as_view(), name='home')
-Including another URLconf
-    1. Import the include() function: from django.urls import include, path
-    2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
-"""
 from django.contrib import admin
 from django.urls import path, include
 import xadmin
-from apps.users.views import index
+from apps.users.views import index, page_not_found
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -28,3 +13,6 @@ urlpatterns = [
     path('', index, name='index'),
     path('captcha/', include('captcha.urls'))
 ]
+# 配置全局404、500，变量handler404、handler500不能变，其它可以
+handler404 = 'apps.users.views.page_not_found'
+handler500 = 'apps.users.views.server_error'

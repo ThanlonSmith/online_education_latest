@@ -18,6 +18,7 @@ import datetime
 
 
 def index(request):
+    # 1/0
     """
     首页
     :param request: http请求对象
@@ -452,3 +453,13 @@ class DeleteMessage(View):
         else:
             ret['msg'] = '已读消息失败！'
         return JsonResponse(ret)
+
+
+# 404 page
+def page_not_found(request, exception, template_name='handler_404.html'):
+    return render(request, template_name)
+
+
+# 500 page
+def server_error(request, template_name='handler_500.html'):
+    return render(request, template_name)

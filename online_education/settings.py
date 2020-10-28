@@ -26,10 +26,18 @@ sys.path.insert(0, os.path.join(BASE_DIR, 'apps'))
 SECRET_KEY = '+9w&&5d$(x28zo(-n25d_xplgtae&%7()##gqplj-smxur!(ha'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+"""
+测试环境
+"""
+# DEBUG = True
+#
+# ALLOWED_HOSTS = []
+"""
+生产环境
+"""
+DEBUG = False
 
-ALLOWED_HOSTS = []
-
+ALLOWED_HOSTS = ['*']
 # Application definition
 
 INSTALLED_APPS = [
@@ -160,6 +168,9 @@ USE_TZ = False
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.1/howto/static-files/
 
+"""
+测试服务器会找下面的路径
+"""
 STATIC_URL = '/static/'  # 引用名
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'static')  # 实际名 ,即实际文件夹的名字
