@@ -12,6 +12,7 @@ class CityInfoXadmin(object):
 
 class OrgInfoXadmin(object):
     list_display = ['image', 'name', 'course_num', 'study_num', 'love_num', 'click_num', 'category', 'city_info', ]
+    style_fields = {'detail': 'ueditor'}  # 告诉xadmin把detail字段设置为ueditor
 
 
 class TeacherInfoXadmin(object):

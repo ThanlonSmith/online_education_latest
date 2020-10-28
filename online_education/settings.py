@@ -17,7 +17,7 @@ from pathlib import Path
 BASE_DIR = Path(__file__).resolve().parent.parent
 # 将我们自己定的包加入到Python搜索环境变量中
 sys.path.insert(0, os.path.join(BASE_DIR, 'apps'))
-# sys.path.insert(0, os.path.join(BASE_DIR, 'extra_apps'))
+sys.path.insert(0, os.path.join(BASE_DIR, 'extra_apps'))
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/3.1/howto/deployment/checklist/
@@ -29,15 +29,15 @@ SECRET_KEY = '+9w&&5d$(x28zo(-n25d_xplgtae&%7()##gqplj-smxur!(ha'
 """
 测试环境
 """
-# DEBUG = True
-#
-# ALLOWED_HOSTS = []
+DEBUG = True
+
+ALLOWED_HOSTS = []
 """
 生产环境
 """
-DEBUG = False
-
-ALLOWED_HOSTS = ['*']
+# DEBUG = False
+#
+# ALLOWED_HOSTS = ['*']
 # Application definition
 
 INSTALLED_APPS = [
@@ -55,7 +55,8 @@ INSTALLED_APPS = [
     # 'extra_apps.xadmin' # or 'xadmin'
     'xadmin',
     'crispy_forms',
-    'captcha'
+    'captcha',
+    'DjangoUeditor',
 ]
 
 AUTH_USER_MODEL = 'users.UserProfile'

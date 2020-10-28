@@ -1,3 +1,4 @@
+from DjangoUeditor.models import UEditorField
 from django.db import models
 from datetime import datetime
 
@@ -22,7 +23,17 @@ class OrgInfo(models.Model):
     study_num = models.IntegerField(default=0, verbose_name="学习人数")
     address = models.CharField(max_length=200, verbose_name="机构地址")
     desc = models.CharField(max_length=200, verbose_name="机构简介")
-    detail = models.TextField(verbose_name="机构详情")
+    # detail = models.TextField(verbose_name="机构详情")
+    detail = UEditorField(
+        verbose_name='机构详情',
+        width=800,  # 宽
+        height=400,  # 高
+        toolbars='full',  # 显示全部工具栏
+        imagePath='ueditor/images/',  # 图片的路径（上传到media中ueditor/images/）
+        filePath='ueditor/files/',  # 文件的路径（上传到media中ueditor/files/）
+        upload_settings={'imageMaxSizing': 1024000},  # 最大上传的大小
+        default='',  # 默认值
+    )
     love_num = models.IntegerField(default=0, verbose_name="收藏数")
     click_num = models.IntegerField(default=0, verbose_name="访问量")
     category = models.CharField(choices=(('pxjg', '培训机构'), ('gx', '高校'), ('individual', '个人')), max_length=10,

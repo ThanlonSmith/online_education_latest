@@ -4,7 +4,7 @@
     <div class="panel panel-default">
         <div class="panel-heading">机构介绍</div>
         <div class="panel-body">
-            {{ curr_org.detail }}
+            {{ curr_org.detail|safe }}
         </div>
     </div>
 {% endblock %}
