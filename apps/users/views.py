@@ -1,3 +1,4 @@
+from ..operations.models import UserMessage
 from ..orgs.models import TeacherInfo
 from ..operations.models import UserLove
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
@@ -96,6 +97,13 @@ def user_login(request):
                     # return redirect('index')
                     # 可以加参数
                     login(request, user)
+                    """
+                    记录登录的信息
+                    """
+                    user_message = UserMessage()
+                    user_message.message_man = user.id
+                    user_message.message_content = '欢迎登录！'
+                    user_message.save()
                     return redirect(reverse('index'))
                 else:
                     return HttpResponse('请到邮箱中激活用户，否则无法登录系统！')
@@ -418,6 +426,29 @@ class MyLoveCourse(View):
 # 我的消息
 class MyMessage(View):
     def get(self, request):
+        user_message_list = UserMessage.objects.filter(message_man=request.user.id).order_by('-add_time')
+        # 未读消息数量
+        not_read_count = UserMessage.objects.filter(message_man=request.user.id, message_status=False).count()
         return render(request, 'users/my_message.html', {
-            'item_name': '我的消息'
+            'item_name': '我的消息',
+            'user_message_list': user_message_list,
+            'not_read_count': not_read_count
         })
+
+
+# 已读消息
+class DeleteMessage(View):
+    def get(self, request):
+        message_id = request.GET.get('user_message_id', '')
+        ret = {'status': 'fail', 'msg': ''}
+        if message_id:
+            user_message_list = UserMessage.objects.filter(id=message_id)
+            if user_message_list.exists():
+                user_message = user_message_list.first()
+                user_message.message_status = True
+                user_message.save()
+                ret['status'] = 'ok'
+                ret['msg'] = '已读消息成功！'
+        else:
+            ret['msg'] = '已读消息失败！'
+        return JsonResponse(ret)

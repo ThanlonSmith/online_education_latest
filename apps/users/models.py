@@ -14,7 +14,7 @@ class UserProfile(AbstractUser):
     address = models.CharField(max_length=200, verbose_name='用户地址')
     phone = models.CharField(max_length=200, verbose_name='用户手机号')
     # 控制用户是否被激活
-    is_start = models.BooleanField(default=False,verbose_name='是否激活')
+    is_start = models.BooleanField(default=False, verbose_name='是否激活')
     add_time = models.DateTimeField(default=datetime.now, verbose_name='添加时间')
 
     def __str__(self):
@@ -23,6 +23,11 @@ class UserProfile(AbstractUser):
     class Meta:
         verbose_name = '用户信息'
         verbose_name_plural = verbose_name
+
+    # 未读消息数量(因循环导入不能使用)
+    # def get_not_read_count(self, ):
+    #     not_read_count = UserMessage.objects.filter(message_man=self.id, message_status=False).count()
+    #     return not_read_count
 
 
 class BannerInfo(models.Model):

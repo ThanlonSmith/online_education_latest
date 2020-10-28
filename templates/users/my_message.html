@@ -1,14 +1,75 @@
 {% extends 'users/user_base.html' %}
+{% block notice %}
+    <div class="col-md-12" style="padding-left: 2px;padding-right: 2px">
+        <div class="media">
+            <div class="media-left" style="width: 100%;">
+                <div style="height: 30px;line-height: 30px;">
+                    <span id="msg" class="glyphicon glyphicon-volume-up"></span>
+                    {% if not_read_count > 0 %}
+                        <span style="color: #9f9f9f;">您有{{ not_read_count }}条未读消息!</span>
+                    {% else %}
+                        <span style="color: #9f9f9f;">您暂时没有未读消息!</span>
+                    {% endif %}
+                </div>
+            </div>
+            <div class="media-body"></div>
+            <div class="media-right">
+            </div>
+        </div>
+    </div>
+{% endblock %}
 {% block right %}
     <div class="panel panel-default">
         <div class="panel-heading">我的消息</div>
         <div class="panel-body">
-
+            {% for user_message in user_message_list %}
+                <div class="delete_message" data-msg-id="{{ user_message.id }}">
+                    <p style="color: #9f9f9f;">
+                        <span class="glyphicon glyphicon-time"></span>{{ user_message.add_time }}
+                    </p>
+                    <p {% if not user_message.message_status %}style="color: hotpink;font-weight: bold" {% endif %}>
+                        {{ user_message.message_content }}
+                    </p>
+                </div>
+            {% endfor %}
         </div>
     </div>
 {% endblock %}
 {% block right_js %}
     <script>
         $('#my_message').addClass('active')
+        $(function () {
+            delete_message();
+            {% if not_read_count > 0 %}
+                setInterval(slash, 500);
+            {% endif %}
+        })
+
+        function delete_message() {
+            $('.delete_message').click(function () {
+                //let user_message_id =  $('.delete_message').attr('data-msg-id');
+                let user_message_id = $(this).attr('data-msg-id');
+                $.ajax({
+                    type: 'get',
+                    url: '{% url "users:delete_message" %}',
+                    data: {
+                        'user_message_id': user_message_id
+                    },
+                    success: function (callback) {
+                        if (callback.status === 'ok') {
+                            location.reload()
+                        } else {
+                            console.log(callback.msg)
+                        }
+                    }
+                })
+            })
+        }
+
+        function slash() {
+            let msg_obj = $("#msg");
+            msg_obj.animate({opacity: "0"}); //改变不透明度
+            msg_obj.animate({opacity: "1"});
+        }
     </script>
 {% endblock %}

@@ -16,7 +16,7 @@ Including another URLconf
 from django.urls import path, re_path
 from .views import user_register, user_login, user_logout, user_activate, user_forget_pwd, user_reset, PersonalProfile, \
     MyCourse, MyLoveOrg, MyLoveTeacher, MyLoveCourse, MyMessage, UserChangeImage, UpdateProfile, GetEmailCode, \
-    ResetEmail
+    ResetEmail, DeleteMessage
 
 urlpatterns = [
     path('register/', user_register, name='register'),
@@ -40,4 +40,7 @@ urlpatterns = [
     path('mylovecourse/', MyLoveCourse.as_view(), name='my_love_course'),
     # 我的消息
     path('mymessage/', MyMessage.as_view(), name='my_message'),
+    # 已读消息
+    path('delete/message', DeleteMessage.as_view(), name='delete_message')
+
 ]
