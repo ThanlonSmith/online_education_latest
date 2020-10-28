@@ -1,9 +1,142 @@
 {% extends 'users/user_base.html' %}
 {% block right %}
+    <div style="background-color: #f8f8f8;height: 41px;line-height: 41px;border: 1px solid #ddd;">
+        <ul style="padding-left: 0;">
+            <li style="float: left;list-style-type: none;margin: 0 16px;"><a
+                    style="color: #333;text-decoration:none;height: 50px;display: inline-block;"
+                    href="{% url 'users:my_love_org' %}">授课机构</a>
+            </li>
+            <li style="float: left;list-style-type: none;margin: 0 16px;"><a
+                    style="text-decoration: none;height: 50px;display: inline-block;color:#a52a2a;font-weight: bold"
+                    href="{% url 'users:my_love_teacher' %}">授课教师</a>
+            </li>
+            <li style="float: left;list-style-type: none;margin: 0 16px;"><a
+                    style="color: #333;text-decoration: none;height: 50px;display: inline-block"
+                    href="{% url 'users:my_love_course' %}">公开课程</a>
+            </li>
+            <li style="clear: both;list-style: none;"></li>
+        </ul>
+    </div>
+    <div class="panel panel-default" style="margin-bottom: 8px">
+        <div class="panel-body">
+            <div style="padding-left:2px;padding-right:2px">
+                {% for teacher_info in pages %}
+                    <div class="media des">
+                        <div class="media-left">
+                            <img width="70" height="70" class="media-object img-circle" data-src="" alt="64x64"
+                                 data-holder-rendered="true"
+                                 src="/static{{ MEDIA_URL }}{{ teacher_info.image }}">
+                        </div>
+                        <div class="media-body">
+                            <h4 class="media-heading">{{ teacher_info.name }}
+                                <img width="23" height="29" src="/static/media/org/authentication.png"
+                                     data-src="holder.js/10x10">
+                                <span style="color: #fb8341">金牌讲师</span>
+                            </h4>
 
+                            <ul style="color: #848484;font-size: 12px;">
+                                <li style="margin-top: 3px">
+                                    <span>工作年限：<span>{{ teacher_info.work_year }}</span>年</span>&nbsp;&nbsp;
+                                    <span>课程数：<span>{{ teacher_info.courseinfo_set.count }}</span></span>
+                                </li>
+                                <li style="margin-top: 3px">
+                                    <span>就职公司：<span>{{ teacher_info.work_company.name }}</span></span>
+                                    <span>工作职位：<span>{{ teacher_info.work_position }}</span></span>
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="media-right" style="padding-top: 8px">
+                            <div class="delete_love_btn" data-love-id="{{ teacher_info.id }}" style="cursor: pointer">
+                                <span class="glyphicon glyphicon-trash"></span>
+                            </div>
+                        </div>
+                    </div>
+                    <hr>
+                {% endfor %}
+            </div>
+        </div>
+        <nav aria-label="Page navigation" class="text-center">
+            <ul class="pagination">
+                <li>
+                    <a href="?page_num=1"
+                       aria-label="Previous">
+                        <span aria-hidden="true">首页</span>
+                    </a>
+                </li>
+                {% if pages.has_previous %}
+                    <li>
+                        <a href="?page_num={{ pages.previous_page_number }}"
+                           aria-label="Previous">
+                            <span aria-hidden="true">上一页</span>
+                        </a>
+                    </li>
+                {% else %}
+                    <li class="disabled">
+                        <a href="javascript:" aria-label="Previous">
+                            <span aria-hidden="true">上一页</span>
+                        </a>
+                    </li>
+                {% endif %}
+                {% for num in pages.paginator.page_range %}
+                    {% if pages.number == num %}
+                        <li class="active"><a
+                                href="?page_num={{ num }}">{{ num }}</a>
+                        </li>
+                    {% else %}
+                        <li>
+                            <a href="?page_num={{ num }}">{{ num }}</a>
+                        </li>
+                    {% endif %}
+                {% endfor %}
+                {% if pages.has_next %}
+                    <li>
+                        <a href="?page_num={{ pages.next_page_number }}"
+                           aria-label="Next">
+                            <span aria-hidden="true">下一页</span>
+                        </a>
+                    </li>
+                {% else %}
+                    <li class="disabled">
+                        <a href="javascript:" aria-label="Next">
+                            <span aria-hidden="true">下一页</span>
+                        </a>
+                    </li>
+                {% endif %}
+                <li>
+                    <a href="?page_num={{ num_pages }}"
+                       aria-label="Previous">
+                        <span aria-hidden="true">尾页</span>
+                    </a>
+                </li>
+            </ul>
+        </nav>
+    </div>
 {% endblock %}
 {% block right_js %}
     <script>
         $('#my_love').addClass('active')
+        $(function () {
+            $('.delete_love_btn').click(function () {
+                let love_id = $(this).attr('data-love-id');
+                let love_type = 3;
+                let obj = $(this)
+                $.ajax({
+                    type: 'get',
+                    url: "{% url 'operations:delete_love' %}",
+                    data: {
+                        'love_id': love_id,
+                        'love_type': love_type,
+                    },
+                    success: function (callback) {
+                        if (callback.status === 'ok') {
+                            //拿到点击对象的祖先节点当中有类名是des的祖先节点
+                            obj.parents('.des').remove()
+                        } else {
+                            console.log('取消失败！')
+                        }
+                    }
+                })
+            })
+        })
     </script>
 {% endblock %}

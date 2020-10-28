@@ -1,9 +1,149 @@
 {% extends 'users/user_base.html' %}
 {% block right %}
-
+    <div style="background-color: #f8f8f8;height: 41px;line-height: 41px;border: 1px solid #ddd;">
+        <ul style="padding-left: 0;">
+            <li style="float: left;list-style-type: none;margin: 0 16px;"><a
+                    style="text-decoration:none;height: 50px;display: inline-block;
+                    color:#a52a2a;font-weight: bold"
+                    href="{% url 'users:my_love_org' %}">授课机构</a>
+            </li>
+            <li style="float: left;list-style-type: none;margin: 0 16px;"><a
+                    style="color: #333;text-decoration: none;height: 50px;display: inline-block"
+                    href="{% url 'users:my_love_teacher' %}">授课教师</a>
+            </li>
+            <li style="float: left;list-style-type: none;margin: 0 16px;"><a
+                    style="color: #333;text-decoration: none;height: 50px;display: inline-block"
+                    href="{% url 'users:my_love_course' %}">公开课程</a>
+            </li>
+            <li style="clear: both;list-style: none;"></li>
+        </ul>
+    </div>
+    <div class="panel panel-default" style="margin-bottom: 8px">
+        <div class="panel-body">
+            {% for org_info in pages %}
+                <div style="padding-left:2px;padding-right:2px" class="des">
+                    <div class="panel panel-default" style="margin-bottom: 8px">
+                        <div class="panel-body">
+                            <div class="media">
+                                <div class="media-left">
+                                    <a href="{% url 'orgs:org_home' org_info.id %}">
+                                        <img width="100px" height="80px" class="media-object" data-src="" alt="64x64"
+                                             data-holder-rendered="true"
+                                             src="/static{{ MEDIA_URL }}{{ org_info.image }}">
+                                    </a>
+                                </div>
+                                <div class="media-body">
+                                    <a href="{% url 'orgs:org_home' org_info.id %}"
+                                       style="text-decoration:none;color: #333333">
+                                        <h4 class="media-heading">{{ org_info.name }}
+                                            <img width="23" height="29" src="/static/media/org/authentication.png"
+                                                 data-src="holder.js/10x10">
+                                            <img width="23" height="29" src="/static/media/org/gold.png"
+                                                 data-src="holder.js/10x10">
+                                        </h4>
+                                    </a>
+                                    <ul style="color: #848484;font-size: 12px;">
+                                        <li style="margin-top: 30px"><span
+                                                class="glyphicon glyphicon-map-marker"></span>{{ org_info.address }}
+                                        </li>
+                                    </ul>
+                                </div>
+                                <div class="media-right">
+                                    <div class="delete_love_btn" love-id="{{ org_info.id }}"
+                                         style="cursor: pointer">
+                                        {#                                        <img style="margin-top: 10px" class="media-object img-circle" src=""#}
+                                        {#                                             data-src="holder.js/80x80" alt="...">#}
+                                        <span class="glyphicon glyphicon-trash"></span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+        <nav aria-label="Page navigation" class="text-center">
+            <ul class="pagination">
+                <li>
+                    <a href="?page_num=1"
+                       aria-label="Previous">
+                        <span aria-hidden="true">首页</span>
+                    </a>
+                </li>
+                {% if pages.has_previous %}
+                    <li>
+                        <a href="?page_num={{ pages.previous_page_number }}"
+                           aria-label="Previous">
+                            <span aria-hidden="true">上一页</span>
+                        </a>
+                    </li>
+                {% else %}
+                    <li class="disabled">
+                        <a href="javascript:" aria-label="Previous">
+                            <span aria-hidden="true">上一页</span>
+                        </a>
+                    </li>
+                {% endif %}
+                {% for num in pages.paginator.page_range %}
+                    {% if pages.number == num %}
+                        <li class="active"><a
+                                href="?page_num={{ num }}">{{ num }}</a>
+                        </li>
+                    {% else %}
+                        <li>
+                            <a href="?page_num={{ num }}">{{ num }}</a>
+                        </li>
+                    {% endif %}
+                {% endfor %}
+                {% if pages.has_next %}
+                    <li>
+                        <a href="?page_num={{ pages.next_page_number }}"
+                           aria-label="Next">
+                            <span aria-hidden="true">下一页</span>
+                        </a>
+                    </li>
+                {% else %}
+                    <li class="disabled">
+                        <a href="javascript:" aria-label="Next">
+                            <span aria-hidden="true">下一页</span>
+                        </a>
+                    </li>
+                {% endif %}
+                <li>
+                    <a href="?page_num={{ num_pages }}"
+                       aria-label="Previous">
+                        <span aria-hidden="true">尾页</span>
+                    </a>
+                </li>
+            </ul>
+        </nav>
+    </div>
 {% endblock %}
 {% block right_js %}
     <script>
         $('#my_love').addClass('active')
+        $(function () {
+            $('.delete_love_btn').click(function () {
+                let love_id = $(this).attr('love-id');
+                let love_type = 1;
+                let obj = $(this)
+                $.ajax({
+                    type: 'get',
+                    url: "{% url 'operations:delete_love' %}",
+                    data: {
+                        'love_id': love_id,
+                        'love_type': love_type,
+                    },
+                    success: function (callback) {
+                        if (callback.status === 'ok') {
+                            //拿到点击对象的祖先节点当中有类名是des的祖先节点
+                            obj.parents('.des').remove()
+                        } else {
+                            console.log('取消失败！')
+                        }
+                    }
+                })
+            })
+        })
     </script>
 {% endblock %}

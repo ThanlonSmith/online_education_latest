@@ -15,10 +15,11 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
-from .views import user_ask, user_love, course_comment
+from .views import user_ask, user_love, course_comment, DeleteLove
 
 urlpatterns = [
     path('user/ask', user_ask, name='user_ask'),
     path('user/love', user_love, name='user_love'),
-    path('user/comment', course_comment, name='user_comment')
+    path('user/comment', course_comment, name='user_comment'),
+    path('user/delete-love', DeleteLove.as_view(), name='delete_love')
 ]

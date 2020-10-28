@@ -27,7 +27,7 @@ class UserLove(models.Model):
     add_time = models.DateTimeField(default=datetime.now, verbose_name="收藏时间")
 
     def __str__(self):
-        return self.love_man.username
+        return str(self.love_man)
 
     class Meta:
         verbose_name = '收藏信息'

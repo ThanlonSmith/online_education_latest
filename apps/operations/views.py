@@ -1,3 +1,4 @@
+from django.views import View
 from .forms import UserAskForm
 from django.http import JsonResponse
 from apps.operations.models import UserLove, UserComment
@@ -101,3 +102,29 @@ def course_comment(request):
             ret['status'] = 'fail'
             ret['msg'] = '评论失败！'
         return JsonResponse(ret)
+
+
+# 取消收藏
+class DeleteLove(View):
+    def get(self, request):
+        love_id = request.GET.get('love_id', '')
+        love_type = request.GET.get('love_type', '')
+        ret = {'status': 'fail', 'msg': ''}
+        if love_id and love_type:
+            userlove_list = UserLove.objects.filter(love_id=love_id, love_type=love_type, love_man=request.user,
+                                                    love_status=True)
+            if userlove_list.exists():
+                userlove = userlove_list[0]
+                # print(userlove.love_status)  # True
+                userlove.love_status = False
+                userlove.save()
+                # print(userlove.love_status)  # False
+                ret['status'] = 'ok'
+                ret['msg'] = '取消成功！'
+                return JsonResponse(ret)
+            else:
+                ret['msg'] = '取消失败！'
+                return JsonResponse(ret)
+        else:
+            ret['msg'] = '取消失败！'
+            return JsonResponse(ret)

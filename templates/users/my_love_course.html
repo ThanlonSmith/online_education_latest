@@ -1,14 +1,139 @@
 {% extends 'users/user_base.html' %}
 {% block right %}
-    <div class="panel panel-default">
-        <div class="panel-heading">机构课程</div>
+    <div style="background-color: #f8f8f8;height: 41px;line-height: 41px;border: 1px solid #ddd;">
+        <ul style="padding-left: 0;">
+            <li style="float: left;list-style-type: none;margin: 0 16px;"><a
+                    style="color: #333;text-decoration:none;height: 50px;display: inline-block;"
+                    href="{% url 'users:my_love_org' %}">授课机构</a>
+            </li>
+            <li style="float: left;list-style-type: none;margin: 0 16px;"><a
+                    style="color: #333;text-decoration: none;height: 50px;display: inline-block"
+                    href="{% url 'users:my_love_teacher' %}">授课教师</a>
+            </li>
+            <li style="float: left;list-style-type: none;margin: 0 16px;"><a
+                    style="text-decoration: none;height: 50px;display: inline-block;color:#a52a2a;font-weight: bold"
+                    href="{% url 'users:my_love_course' %}">公开课程</a>
+            </li>
+            <li style="clear: both;list-style: none;"></li>
+        </ul>
+    </div>
+    <div class="panel panel-default" style="margin-bottom: 8px">
         <div class="panel-body">
-
+            {% for course_info in pages %}
+                <div style="padding-left:2px;padding-right:2px" class="col-sm-6 col-md-3 des">
+                    <div class="thumbnail">
+                        <a href="{% url 'courses:course_detail' course_info.id %}">
+                            <img data-src="holder.js/100%x150" alt="100%x150"
+                                 src="/static{{ MEDIA_URL }}{{ course_info.image }}">
+                        </a>
+                        <div class="caption" style="padding:0">
+                            <h5 style="font-weight: bold">{{ course_info.name }}</h5>
+                            <p style="font-size: 12px;color: #9f9f9f">
+                                <span style="float: left">时长：<span
+                                        style="color: #fb8341">{{ course_info.study_time }}</span>min</span>
+                                <span style="float: right">参加人数：<span
+                                        style="color: #fb8341">{{ course_info.study_num }}</span></span>
+                            </p>
+                            <div style="clear: both"></div>
+                            <p></p>
+                            <p style="font-size: 12px;color: #9f9f9f;">
+                                <span class="pull-left text-center"
+                                      style="background-color: #f0f0f0;line-height: 30px;width: 70%;">
+                                    {{ course_info.org_info.name }}
+                                </span>
+                                <span class="pull-right text-center delete_love_btn"
+                                      style="background-color: #f0f0f0;line-height: 30px;width: 29%;cursor: pointer"
+                                      data-love-id="{{ course_info.id }}"><span
+                                        class="glyphicon glyphicon-trash"></span></span>
+                            </p>
+                            <div style="clear:both;"></div>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
         </div>
+        <nav aria-label="Page navigation" class="text-center">
+            <ul class="pagination">
+                <li>
+                    <a href="?page_num=1"
+                       aria-label="Previous">
+                        <span aria-hidden="true">首页</span>
+                    </a>
+                </li>
+                {% if pages.has_previous %}
+                    <li>
+                        <a href="?page_num={{ pages.previous_page_number }}"
+                           aria-label="Previous">
+                            <span aria-hidden="true">上一页</span>
+                        </a>
+                    </li>
+                {% else %}
+                    <li class="disabled">
+                        <a href="javascript:" aria-label="Previous">
+                            <span aria-hidden="true">上一页</span>
+                        </a>
+                    </li>
+                {% endif %}
+                {% for num in pages.paginator.page_range %}
+                    {% if pages.number == num %}
+                        <li class="active"><a
+                                href="?page_num={{ num }}">{{ num }}</a>
+                        </li>
+                    {% else %}
+                        <li>
+                            <a href="?page_num={{ num }}">{{ num }}</a>
+                        </li>
+                    {% endif %}
+                {% endfor %}
+                {% if pages.has_next %}
+                    <li>
+                        <a href="?page_num={{ pages.next_page_number }}"
+                           aria-label="Next">
+                            <span aria-hidden="true">下一页</span>
+                        </a>
+                    </li>
+                {% else %}
+                    <li class="disabled">
+                        <a href="javascript:" aria-label="Next">
+                            <span aria-hidden="true">下一页</span>
+                        </a>
+                    </li>
+                {% endif %}
+                <li>
+                    <a href="?page_num={{ num_pages }}"
+                       aria-label="Previous">
+                        <span aria-hidden="true">尾页</span>
+                    </a>
+                </li>
+            </ul>
+        </nav>
     </div>
 {% endblock %}
 {% block right_js %}
     <script>
-        $('#my_love').addClass('active')
+        $('#my_love').addClass('active');
+        $(function () {
+            $('.delete_love_btn').click(function () {
+                let love_id = $(this).attr('data-love-id');
+                let love_type = 2;
+                let obj = $(this)
+                $.ajax({
+                    type: 'get',
+                    url: "{% url 'operations:delete_love' %}",
+                    data: {
+                        'love_id': love_id,
+                        'love_type': love_type,
+                    },
+                    success: function (callback) {
+                        if (callback.status === 'ok') {
+                            //拿到点击对象的祖先节点当中有类名是des的祖先节点
+                            obj.parents('.des').remove()
+                        } else {
+                            console.log('取消失败！')
+                        }
+                    }
+                })
+            })
+        })
     </script>
 {% endblock %}

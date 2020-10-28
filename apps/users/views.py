@@ -1,3 +1,5 @@
+from ..orgs.models import TeacherInfo
+from ..operations.models import UserLove
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from django.shortcuts import render, redirect, reverse, HttpResponse
 from .forms import UserRegisterForm, UserLoginForm, UserForgetPwdForm, UserResetForm, UserChangeImageForm, \
@@ -325,27 +327,91 @@ class MyCourse(View):
         })
 
 
-# 我的收藏-课程机构
+# 我的收藏-授课机构
 class MyLoveOrg(View):
     def get(self, request):
+        """
+        获取收藏机构
+        :param request: http请求对象
+        :return: 返回json数据，在模板页面当中去处理
+        """
+        """
+        # 使用以下两个都可以作为love_man的条件
+        print(request.user.id) # 8
+        print(request.user) # thanlon@sina.com
+        """
+        userlove_org_list = UserLove.objects.filter(love_man=request.user, love_type=1, love_status=True)
+        userlove_ids = [userlove_org.love_id for userlove_org in userlove_org_list]
+        org_list = OrgInfo.objects.filter(id__in=userlove_ids).order_by('id')
+        """
+        分页功能
+        """
+        page_num = request.GET.get('page_num', '')
+        per_page = 4
+        paginator = Paginator(org_list, per_page)
+        num_pages = paginator.num_pages
+        try:
+            pages = paginator.page(page_num)
+        except PageNotAnInteger:
+            pages = paginator.page(1)
+        except EmptyPage:
+            pages = paginator.page(1)
         return render(request, 'users/my_love_org.html', {
-            'item_name': '我的收藏'
+            'item_name': '我的收藏',
+            'pages': pages,
+            'num_pages': num_pages
         })
 
 
 # 我的收藏-授课教师
 class MyLoveTeacher(View):
     def get(self, request):
+        userlove_teacher_list = UserLove.objects.filter(love_man=request.user, love_type=3, love_status=True)
+        userlove_teacher_ids = [userlove_teacher.love_id for userlove_teacher in userlove_teacher_list]
+        teacherinfo_list = TeacherInfo.objects.filter(id__in=userlove_teacher_ids).order_by('id')
+        """
+        分页功能
+        """
+        page_num = request.GET.get('page_num', '')
+        per_page = 4
+        paginator = Paginator(teacherinfo_list, per_page)
+        num_pages = paginator.num_pages
+        try:
+            pages = paginator.page(page_num)
+        except PageNotAnInteger:
+            pages = paginator.page(1)
+        except EmptyPage:
+            pages = paginator.page(1)
         return render(request, 'users/my_love_teacher.html', {
-            'item_name': '我的收藏'
+            'item_name': '我的收藏',
+            'pages': pages,
+            'num_pages': num_pages
         })
 
 
 # 我的收藏-公开课程
 class MyLoveCourse(View):
     def get(self, request):
+        userlove_course_list = UserLove.objects.filter(love_man=request.user, love_type=2, love_status=True)
+        love_ids = [userlove_course.love_id for userlove_course in userlove_course_list]
+        course_list = CourseInfo.objects.filter(id__in=love_ids).order_by('id')
+        """
+        分页功能
+        """
+        page_num = request.GET.get('page_num', '')
+        per_page = 4
+        paginator = Paginator(course_list, per_page)
+        num_pages = paginator.num_pages
+        try:
+            pages = paginator.page(page_num)
+        except PageNotAnInteger:
+            pages = paginator.page(1)
+        except EmptyPage:
+            pages = paginator.page(1)
         return render(request, 'users/my_love_course.html', {
-            'item_name': '我的收藏'
+            'item_name': '我的收藏',
+            'pages': pages,
+            'num_pages': num_pages
         })
 
 
