@@ -1,3 +1,4 @@
+from tools.decorators import login_decorator
 from django.views import View
 from .forms import UserAskForm
 from django.http import JsonResponse
@@ -27,6 +28,7 @@ def user_ask(request):
 
 
 # 用户收藏
+@login_decorator
 def user_love(request):
     ret = {'status': None, 'msg': None}
     if request.method == 'GET':

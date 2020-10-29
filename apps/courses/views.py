@@ -1,3 +1,6 @@
+from tools.decorators import login_decorator
+# 自带的装饰器
+from django.contrib.auth.decorators import login_required
 from django.shortcuts import render
 from .models import CourseInfo
 from ..operations.models import UserLove, UserCourse
@@ -81,6 +84,8 @@ def course_detail(request, course_id):
 
 
 # 课程视频
+# @login_required(login_url='/users/login/')
+@login_decorator
 def course_video(request, course_id):
     if course_id:
         current_course = CourseInfo.objects.filter(id=course_id)

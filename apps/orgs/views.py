@@ -22,7 +22,7 @@ def org_list(request):
     """
     category = request.GET.get('category', '')  # <class 'str'>
     if category:
-        all_orgs = all_orgs.filter(category=category)
+        all_orgs = all_orgs.filter(category=category).order_by('id')
     """
     根据所在地区进行刷选
     """
@@ -173,7 +173,7 @@ def org_teacher(request, org_id):
 def teacher_list(request):
     # 讲师排行榜，根据收藏数量
     ranking_list = TeacherInfo.objects.order_by('-love_num')[:2]
-    all_teacher = TeacherInfo.objects.all()
+    all_teacher = TeacherInfo.objects.all().order_by('id')
     sort = request.GET.get('sort', '')
     # 讲师排行榜，根据点击数量
     if sort:

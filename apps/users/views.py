@@ -105,7 +105,13 @@ def user_login(request):
                     user_message.message_man = user.id
                     user_message.message_content = '欢迎登录！'
                     user_message.save()
-                    return redirect(reverse('index'))
+                    # 如果从cookie中取到url就获取，否则url指向路径/
+                    url = request.COOKIES.get('url', '/')
+                    # return redirect(reverse('index'))
+                    # 要清除cookie
+                    ret = redirect(url)
+                    ret.delete_cookie('url')
+                    return ret
                 else:
                     return HttpResponse('请到邮箱中激活用户，否则无法登录系统！')
             return render(request, 'users/login.html', {
