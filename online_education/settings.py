@@ -29,15 +29,15 @@ SECRET_KEY = '+9w&&5d$(x28zo(-n25d_xplgtae&%7()##gqplj-smxur!(ha'
 """
 测试环境
 """
-DEBUG = True
-
-ALLOWED_HOSTS = []
+# DEBUG = True
+#
+# ALLOWED_HOSTS = []
 """
 生产环境
 """
-# DEBUG = False
-#
-# ALLOWED_HOSTS = ['*']
+DEBUG = False
+
+ALLOWED_HOSTS = ['*']
 # Application definition
 
 INSTALLED_APPS = [
